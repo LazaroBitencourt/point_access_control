@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import point_access_control.model.JornadaTrabalho;
@@ -26,7 +25,7 @@ public class JornadaTrabalhoController{
     @Operation(summary = "Criar jornada de trabalho", description = "Cria uma jornada de trabalho e retorna os seus dados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Jornada de trabalho criada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Jornada de trabalho inexistente")
+            @ApiResponse(responseCode = "400", description = "Elemento é nulo ou contém campos nulos")
     })
     public ResponseEntity<JornadaTrabalho> createJornada(@RequestBody JornadaTrabalho jornadaTrabalho){
         return ResponseEntity.status(201).body(jornadaService.create(jornadaTrabalho));
@@ -34,12 +33,12 @@ public class JornadaTrabalhoController{
 
 
     @GetMapping
-    @Operation(summary = "Obter todas jornada de trabalho", description = "Retorna um lista com todas jornadas de trabalho")
+    @Operation(summary = "Obter todas jornadas de trabalho", description = "Retorna um lista com todas jornadas de trabalho")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Operação bem sucedida"),
             @ApiResponse(responseCode = "404", description = "jornadas de trabalho inexistentes")
     })
-    public ResponseEntity<Iterable<JornadaTrabalho>> getAllJornadas(){
+    public ResponseEntity<Iterable<JornadaTrabalho>> getJornadaList(){
        return ResponseEntity.ok( jornadaService.findAll());
     }
 

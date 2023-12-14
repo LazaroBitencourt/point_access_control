@@ -8,7 +8,6 @@ import point_access_control.model.JornadaTrabalho;
 import point_access_control.repository.JornadaRepository;
 import point_access_control.service.JornadaService;
 import java.util.List;
-import java.util.NoSuchElementException;
 import static java.util.Optional.ofNullable;
 
 @Service
@@ -25,35 +24,35 @@ public class JornadaServiceImp implements JornadaService {
 
     @Override
     public JornadaTrabalho create(JornadaTrabalho jornadaTrabalho) {
-        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField());
+        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField("Jornada de trabalho"));
         return JORNADAREPOSITORY.save(jornadaTrabalho);
     }
     @Override
     public Iterable<JornadaTrabalho> findAll() {
         List<JornadaTrabalho> jornadas = JORNADAREPOSITORY.findAll();
         if(jornadas.isEmpty()){
-            throw new ElementsNotFound();
+            throw new ElementsNotFound("Jornada de Trabalho");
         }
         return jornadas;
     }
 
     @Override
     public JornadaTrabalho findById(Long id) {
-        return JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException());
+        return JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
 
     }
 
     @Override
     public JornadaTrabalho update(Long id, JornadaTrabalho jornadaTrabalho) {
-        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField());
-        JornadaTrabalho jornada = JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException());
+        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField("Jornada de Trabalho"));
+        JornadaTrabalho jornada = JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
         jornada.setDescricao(jornadaTrabalho.getDescricao());
         return JORNADAREPOSITORY.save(jornada);
     }
 
     @Override
     public void delete(Long id) {
-        JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException());
+        JORNADAREPOSITORY.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
         JORNADAREPOSITORY.deleteById(id);
 
     }

@@ -3,6 +3,8 @@ package point_access_control.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -11,9 +13,17 @@ import lombok.*;
 @Builder
 @Entity
 public class Localidade {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @Embeddable
+    public class LocalidadeId implements Serializable {
+        private Long idLocalidade;
+        private Long idNivelAcesso;
+    }
+    @EmbeddedId
+    private LocalidadeId id;
     private String descricao;
     @ManyToOne
     private NivelAcesso nivelAcesso;

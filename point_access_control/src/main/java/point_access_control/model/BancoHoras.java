@@ -3,7 +3,6 @@ package point_access_control.model;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 
 import java.io.Serializable;
