@@ -11,7 +11,7 @@ import point_access_control.service.JornadaService;
 
 @RestController
 @RequestMapping("/jornada")
-@Tag(name = "Jornada de trabalho controller", description = "RESTful API para gerênciar jornadas de trabalho.")
+@Tag(name = "Jornada de trabalho controller", description = "Gerenciamento de jornadas de trabalho.")
 public class JornadaTrabalhoController{
 
     private final JornadaService jornadaService;

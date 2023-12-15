@@ -4,6 +4,6 @@ public class ElementsNotFound extends RuntimeException{
     private static final long serialVersionUID = 1L;
     public ElementsNotFound(String entity){
 
-        super(entity + " de trabalho inexistentes");
+        super(entity + " inexistentes");
     }
 }
