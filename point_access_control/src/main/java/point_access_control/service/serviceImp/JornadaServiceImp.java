@@ -8,6 +8,7 @@ import point_access_control.model.JornadaTrabalho;
 import point_access_control.repository.JornadaRepository;
 import point_access_control.service.JornadaService;
 import java.util.List;
+
 import static java.util.Optional.ofNullable;
 
 @Service
