@@ -1,37 +1,43 @@
 package point_access_control.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import point_access_control.model.Usuario;
 import point_access_control.service.UsuarioService;
 
 @RestController
-@RequestMapping("/usuario")
-@Tag(name = "Usuário Controller", description = "Gerenciamento de usuários.")
+@RequestMapping(value = "/usuario")
 public class UsuarioController {
 
-   private final  UsuarioService usuarioService;
+    private final  UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-
-    @Operation(summary = "Criar usuário", description = "Cria um usuário e retorna os seus dados")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Usuário nulo ou contém campos nulos")
-    } )
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario){
       return ResponseEntity.status(201).body(usuarioService.create(usuario));
     }
 
+    @GetMapping
+    public ResponseEntity<Iterable<Usuario>> getUsuarioList(){
+        return ResponseEntity.ok(usuarioService.findAll());
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Usuario> getUsuario (@PathVariable Long id){
+        return ResponseEntity.ok(usuarioService.findById(id));
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
+        return ResponseEntity.ok(usuarioService.update(id,usuario));
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id){
+        usuarioService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,6 +1,7 @@
 package point_access_control.exception;
 
-public class NotFoundException extends RuntimeException {
+public class NullException extends RuntimeException{
+
     private static final long serialVersionUID = 1L;
 
 }

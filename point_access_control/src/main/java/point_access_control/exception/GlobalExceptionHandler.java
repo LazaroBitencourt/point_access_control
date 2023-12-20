@@ -14,23 +14,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException notFoundException){
-        return new ResponseEntity<>(notFoundException.getMessage(), HttpStatus.NOT_FOUND);
+        String message = "O recurso solicitado não foi encontrado";
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NullField.class)
-    public ResponseEntity<String> handleNullField(NullField nullField){
-        return new ResponseEntity<>(nullField.getMessage(),HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(NullException.class)
+    public ResponseEntity<String> handleNullException(NullException nullException){
+        String message = "Verifique se os campos estão corretamente preenchidos";
+        return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ElementsNotFound.class)
-    public ResponseEntity<String> handleElementsNotFound(ElementsNotFound elementsNotFound){
-        return new ResponseEntity<>(elementsNotFound.getMessage(),HttpStatus.NOT_FOUND);
+    @ExceptionHandler(NotFoundElementsException.class)
+    public ResponseEntity<String> handleNotFoundElementsException(NotFoundElementsException notFoundElementsException){
+       String message = "Os recursos solicitados não foram encontrado";
+        return new ResponseEntity<>(message,HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<String> handleUnexpectedException(Throwable unexpectedException){
-        String message = "Erro inesperado do servidor.";
-        LOGGER.error(message, unexpectedException);
-        return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(Throwable.class)
+//    public ResponseEntity<String> handleUnexpectedException(Throwable unexpectedException){
+//        String message = "Erro inesperado do servidor";
+//        LOGGER.error(message, unexpectedException);
+//        return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }

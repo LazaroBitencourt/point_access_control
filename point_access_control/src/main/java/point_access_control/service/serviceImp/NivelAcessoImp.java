@@ -1,13 +1,13 @@
 package point_access_control.service.serviceImp;
 
+import org.springframework.stereotype.Service;
 import point_access_control.exception.*;
 import point_access_control.model.NivelAcesso;
 import point_access_control.repository.NivelAcessoRepository;
 import point_access_control.service.NivelAcessoService;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
-
+@Service
 public class NivelAcessoImp implements NivelAcessoService {
 
     private final NivelAcessoRepository niveAcessoRepository;
@@ -18,7 +18,9 @@ public class NivelAcessoImp implements NivelAcessoService {
 
     @Override
     public NivelAcesso create(NivelAcesso entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Nível de acesso"));
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
         return  niveAcessoRepository.save(entity);
     }
 
@@ -26,25 +28,27 @@ public class NivelAcessoImp implements NivelAcessoService {
     public Iterable<NivelAcesso> findAll() {
         List<NivelAcesso> nivelAcessoList = niveAcessoRepository.findAll();
         if(nivelAcessoList.isEmpty()){
-            throw new ElementsNotFound("Níveis de acesso");
+            throw new NotFoundElementsException();
         }
         return nivelAcessoList;
     }
 
     @Override
     public NivelAcesso findById(Long id) {
-        return niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException("Nível de acesso"));
+        return niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException());
     }
     @Override
     public NivelAcesso update(Long id, NivelAcesso entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Nível de acesso"));
-        NivelAcesso nivelAcessodb = niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException("Nível de acesso"));
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
+        NivelAcesso nivelAcessodb = niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException());
         nivelAcessodb.setDescricao(entity.getDescricao());
-        return nivelAcessodb;
+        return niveAcessoRepository.save(nivelAcessodb);
     }
     @Override
     public void delete(Long id) {
-        niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException("Nível de acesso"));
+        niveAcessoRepository.findById(id).orElseThrow(()-> new NotFoundException());
         niveAcessoRepository.deleteById(id);
     }
 }

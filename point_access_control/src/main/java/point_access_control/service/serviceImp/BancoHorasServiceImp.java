@@ -1,15 +1,12 @@
 package point_access_control.service.serviceImp;
 import org.springframework.stereotype.Service;
-import point_access_control.exception.ElementsNotFound;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.BancoHoras;
 import point_access_control.repository.BancoHorasRepository;
 import point_access_control.service.BancoHorasService;
-
 import java.util.List;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 public class BancoHorasServiceImp implements BancoHorasService {
@@ -22,7 +19,9 @@ public class BancoHorasServiceImp implements BancoHorasService {
 
     @Override
     public BancoHoras create(BancoHoras entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Banco de horas"));
+        if(entity == null){
+            throw new NullException();
+        }
         return bancoHorasRepository.save(entity);
     }
 
@@ -30,21 +29,23 @@ public class BancoHorasServiceImp implements BancoHorasService {
     public Iterable<BancoHoras> findAll() {
         List<BancoHoras> bancoHoras = bancoHorasRepository.findAll();
         if(bancoHoras.isEmpty()){
-            throw new ElementsNotFound("Banco de horas");
+            throw new NotFoundElementsException();
         }
         return bancoHoras;
     }
 
     @Override
     public BancoHoras findById(Long id) {
-        return bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException("Banco de horas"));
+        return bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException());
 
     }
 
     @Override
     public BancoHoras update(Long id, BancoHoras entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Banco de horas"));
-        BancoHoras bancoHoras = bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException("Banco de horas"));
+        if(entity == null){
+            throw new NullException();
+        }
+        BancoHoras bancoHoras = bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException());
         bancoHoras.setQuantidadeHoras(entity.getQuantidadeHoras());
         bancoHoras.setSaldoHoras(entity.getSaldoHoras());
         bancoHoras.setDataTrabalhada(entity.getDataTrabalhada());
@@ -53,7 +54,7 @@ public class BancoHorasServiceImp implements BancoHorasService {
 
     @Override
     public void delete(Long id) {
-        bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException("Banco de horas"));
+        bancoHorasRepository.findById(id).orElseThrow(()-> new NotFoundException());
         bancoHorasRepository.deleteById(id);
     }
 }

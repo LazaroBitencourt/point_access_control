@@ -1,15 +1,13 @@
 package point_access_control.service.serviceImp;
 
 import org.springframework.stereotype.Service;
-import point_access_control.exception.ElementsNotFound;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.JornadaTrabalho;
 import point_access_control.repository.JornadaRepository;
 import point_access_control.service.JornadaService;
 import java.util.List;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 public class JornadaServiceImp implements JornadaService {
@@ -24,36 +22,40 @@ public class JornadaServiceImp implements JornadaService {
     }
 
     @Override
-    public JornadaTrabalho create(JornadaTrabalho jornadaTrabalho) {
-        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField("Jornada de trabalho"));
-        return jornadaRepository.save(jornadaTrabalho);
+    public JornadaTrabalho create(JornadaTrabalho entity) {
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
+        return jornadaRepository.save(entity);
     }
     @Override
     public Iterable<JornadaTrabalho> findAll() {
         List<JornadaTrabalho> jornadas = jornadaRepository.findAll();
         if(jornadas.isEmpty()){
-            throw new ElementsNotFound("Jornada de Trabalho");
+            throw new NotFoundElementsException();
         }
         return jornadas;
     }
 
     @Override
     public JornadaTrabalho findById(Long id) {
-        return jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
+        return jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException());
 
     }
 
     @Override
-    public JornadaTrabalho update(Long id, JornadaTrabalho jornadaTrabalho) {
-        ofNullable(jornadaTrabalho.getDescricao()).orElseThrow(()-> new NullField("Jornada de Trabalho"));
-        JornadaTrabalho jornada = jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
-        jornada.setDescricao(jornadaTrabalho.getDescricao());
+    public JornadaTrabalho update(Long id, JornadaTrabalho entity) {
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
+        JornadaTrabalho jornada = jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException());
+        jornada.setDescricao(entity.getDescricao());
         return jornadaRepository.save(jornada);
     }
 
     @Override
     public void delete(Long id) {
-        jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException("Jornada de Trabalho"));
+        jornadaRepository.findById(id).orElseThrow(()-> new NotFoundException());
         jornadaRepository.deleteById(id);
 
     }

@@ -1,14 +1,15 @@
 package point_access_control.service.serviceImp;
 
-import point_access_control.exception.ElementsNotFound;
+import org.springframework.stereotype.Service;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.TipoData;
 import point_access_control.repository.TipoDataRepository;
 import point_access_control.service.TipoDataService;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
+@Service
 public class TipoDataServiceImp implements TipoDataService {
 
     private final TipoDataRepository tipoDataRepository;
@@ -18,29 +19,33 @@ public class TipoDataServiceImp implements TipoDataService {
     }
 
     @Override
-    public TipoData create(TipoData tipoData) {
-        ofNullable(tipoData).orElseThrow(()-> new NullField("TipoData"));
-        return tipoDataRepository.save(tipoData);
+    public TipoData create(TipoData entity) {
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
+        return tipoDataRepository.save(entity);
     }
 
     @Override
     public Iterable<TipoData> findAll() {
         List<TipoData> datas = tipoDataRepository.findAll();
         if(datas.isEmpty()){
-            throw new ElementsNotFound("TipoData");
+            throw new NotFoundElementsException();
         }
         return datas;
     }
 
     @Override
     public TipoData findById(Long id) {
-        return tipoDataRepository.findById(id).orElseThrow((()-> new NotFoundException("TipoData")));
+        return tipoDataRepository.findById(id).orElseThrow((()-> new NotFoundException()));
     }
 
     @Override
     public TipoData update(Long id, TipoData entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("TipoData"));
-        TipoData tipoDatadb = tipoDataRepository.findById(id).orElseThrow(()-> new NotFoundException("TipoData"));
+        if(entity == null || entity.getDescricao() == null){
+            throw new NullException();
+        }
+        TipoData tipoDatadb = tipoDataRepository.findById(id).orElseThrow(()-> new NotFoundException());
         tipoDatadb.setDescricao(entity.getDescricao());
         tipoDataRepository.save(tipoDatadb);
         return tipoDatadb;
@@ -48,7 +53,7 @@ public class TipoDataServiceImp implements TipoDataService {
 
     @Override
     public void delete(Long id) {
-        tipoDataRepository.findById(id).orElseThrow(()-> new NotFoundException("TipoData"));
+        tipoDataRepository.findById(id).orElseThrow(()-> new NotFoundException());
         tipoDataRepository.deleteById(id);
     }
 }

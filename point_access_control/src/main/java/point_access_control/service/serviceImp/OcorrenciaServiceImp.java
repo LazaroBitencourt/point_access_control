@@ -1,17 +1,16 @@
 package point_access_control.service.serviceImp;
 
-import point_access_control.exception.ElementsNotFound;
+import org.springframework.stereotype.Service;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.Ocorrencia;
 import point_access_control.repository.OcorrenciaRepository;
-import point_access_control.service.OcorrenciaSevice;
-
+import point_access_control.service.OcorrenciaService;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
-
-public class OcorrenciaServiceImp implements OcorrenciaSevice {
+@Service
+public class OcorrenciaServiceImp implements OcorrenciaService {
 
     private final OcorrenciaRepository ocorrenciaRepository;
 
@@ -21,7 +20,9 @@ public class OcorrenciaServiceImp implements OcorrenciaSevice {
 
     @Override
     public Ocorrencia create(Ocorrencia entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Ocorrêcia"));
+        if(entity == null || entity.getNome() == null && entity.getDescricao() == null){
+            throw new NullException();
+        }
         return  ocorrenciaRepository.save(entity);
     }
 
@@ -29,25 +30,29 @@ public class OcorrenciaServiceImp implements OcorrenciaSevice {
     public Iterable<Ocorrencia> findAll() {
         List<Ocorrencia> ocorrencias =ocorrenciaRepository.findAll();
         if(ocorrencias.isEmpty()){
-            throw new ElementsNotFound("Ocorrências");
+            throw new NotFoundElementsException();
         }
         return ocorrencias;
     }
 
     @Override
     public Ocorrencia findById(Long id) {
-        return ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException("Ocorrência"));
+        return ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException());
     }
+
     @Override
     public Ocorrencia update(Long id, Ocorrencia entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Ocorrências"));
-        Ocorrencia ocorrencia = ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException("Ocorrêcia"));
-        ocorrencia.setDescricao(entity.getDescricao());
-        return ocorrencia;
+        if(entity == null || entity.getNome() == null && entity.getDescricao() == null){
+            throw new NullException();
+        }
+        Ocorrencia ocorrenciaDb = ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException());
+        ocorrenciaDb.setDescricao(entity.getDescricao());
+        return ocorrenciaRepository.save(ocorrenciaDb);
     }
+
     @Override
     public void delete(Long id) {
-        ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException("Ocorrência"));
+        ocorrenciaRepository.findById(id).orElseThrow(()-> new NotFoundException());
         ocorrenciaRepository.deleteById(id);
     }
 }

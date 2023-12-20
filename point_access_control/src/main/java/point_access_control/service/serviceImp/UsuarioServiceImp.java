@@ -1,15 +1,13 @@
 package point_access_control.service.serviceImp;
 
 import org.springframework.stereotype.Service;
-import point_access_control.exception.ElementsNotFound;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.Usuario;
 import point_access_control.repository.UsuarioRepository;
 import point_access_control.service.UsuarioService;
 import java.util.List;
-import static java.util.Optional.ofNullable;
-
 
 @Service
 public class UsuarioServiceImp implements UsuarioService {
@@ -22,7 +20,9 @@ public class UsuarioServiceImp implements UsuarioService {
 
     @Override
     public Usuario create(Usuario usuario) {
-        ofNullable(usuario).orElseThrow(()-> new NullField("Usuário"));
+        if(usuario == null || usuario.getNome() == null) {
+            throw new NullException();
+        }
         return usuarioRepository.save(usuario);
     }
 
@@ -30,20 +30,23 @@ public class UsuarioServiceImp implements UsuarioService {
     public Iterable<Usuario> findAll() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         if(usuarios.isEmpty()){
-            throw new ElementsNotFound("Usuários");
+            throw new NotFoundElementsException();
         }
         return usuarios;
     }
 
     @Override
     public Usuario findById(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException("Usuário"));
+        return usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException());
     }
 
     @Override
     public Usuario update(Long id, Usuario usuario) {
-        ofNullable(usuario).orElseThrow(()-> new NullField("Usuário"));
-        Usuario usuarioDb = usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException("Usuário"));
+        if(usuario == null || usuario.getNome() == null){
+            throw new NullException();
+        }
+        Usuario usuarioDb = usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException());
+
         usuarioDb.setCategoriaUsuario(usuario.getCategoriaUsuario());
         usuarioDb.setNome(usuario.getNome());
         usuarioDb.setEmpresa(usuario.getEmpresa());
@@ -52,13 +55,14 @@ public class UsuarioServiceImp implements UsuarioService {
         usuarioDb.setTolerancia(usuario.getTolerancia());
         usuarioDb.setInicioJornada(usuario.getInicioJornada());
         usuarioDb.setFinalJornada(usuario.getFinalJornada());
-        usuarioRepository.save(usuarioDb);
-        return usuarioDb;
+
+        return usuarioRepository.save(usuarioDb);
+
     }
 
     @Override
     public void delete(Long id) {
-        usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException("Usuario"));
+        usuarioRepository.findById(id).orElseThrow(()-> new NotFoundException());
         usuarioRepository.deleteById(id);
 
 

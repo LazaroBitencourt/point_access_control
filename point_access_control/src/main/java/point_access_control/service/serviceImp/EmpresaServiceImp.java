@@ -1,15 +1,14 @@
 package point_access_control.service.serviceImp;
 
 import org.springframework.stereotype.Service;
-import point_access_control.exception.ElementsNotFound;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.Empresa;
 import point_access_control.repository.EmpresaRepository;
 import point_access_control.service.EmpresaService;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 @Service
 public class EmpresaServiceImp implements EmpresaService {
     private final EmpresaRepository empresaRepository;
@@ -20,7 +19,9 @@ public class EmpresaServiceImp implements EmpresaService {
 
     @Override
     public Empresa create(Empresa entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Empresa"));
+        if(entity == null || entity.getNome() == null){
+            throw new NullException();
+        }
         return empresaRepository.save(entity);
     }
 
@@ -28,21 +29,23 @@ public class EmpresaServiceImp implements EmpresaService {
     public Iterable<Empresa> findAll() {
         List<Empresa> empresas = empresaRepository.findAll();
         if(empresas.isEmpty()){
-            throw new ElementsNotFound("Empresas");
+            throw new NotFoundElementsException();
         }
         return empresas;
     }
 
     @Override
     public Empresa findById(Long id) {
-        return empresaRepository.findById(id).orElseThrow(()-> new NotFoundException("Empresa"));
+        return empresaRepository.findById(id).orElseThrow(()-> new NotFoundException());
 
     }
 
     @Override
     public Empresa update(Long id, Empresa entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Empresa"));
-        Empresa empresadb = empresaRepository.findById(id).orElseThrow(()-> new NotFoundException("Empresa"));
+        if(entity == null || entity.getNome() == null){
+            throw new NullException();
+        }
+        Empresa empresadb = empresaRepository.findById(id).orElseThrow(()-> new NotFoundException());
         empresadb.setDescricao(entity.getDescricao());
         empresadb.setBairro(entity.getBairro());
         empresadb.setCidade(entity.getCidade());
@@ -55,7 +58,7 @@ public class EmpresaServiceImp implements EmpresaService {
 
     @Override
     public void delete(Long id) {
-        empresaRepository.findById(id).orElseThrow(()-> new NotFoundException("Empresa"));
+        empresaRepository.findById(id).orElseThrow(()-> new NotFoundException());
         empresaRepository.deleteById(id);
     }
 }

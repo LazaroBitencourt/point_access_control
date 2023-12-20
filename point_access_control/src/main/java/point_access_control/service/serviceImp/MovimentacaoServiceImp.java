@@ -1,15 +1,13 @@
 package point_access_control.service.serviceImp;
 
 import org.springframework.stereotype.Service;
-import point_access_control.exception.ElementsNotFound;
+import point_access_control.exception.NotFoundElementsException;
 import point_access_control.exception.NotFoundException;
-import point_access_control.exception.NullField;
+import point_access_control.exception.NullException;
 import point_access_control.model.Movimentacao;
 import point_access_control.repository.MovimentacaoRepository;
 import point_access_control.service.MovimentacaoService;
 import java.util.List;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 public class MovimentacaoServiceImp implements MovimentacaoService {
@@ -22,7 +20,9 @@ public class MovimentacaoServiceImp implements MovimentacaoService {
 
     @Override
     public Movimentacao create(Movimentacao entity) {
-        ofNullable(entity).orElseThrow(()-> new NullField("Movimentação"));
+        if(entity == null){
+            throw new NullException();
+        }
         movimentacaoRepository.save(entity);
         return null;
     }
@@ -31,21 +31,23 @@ public class MovimentacaoServiceImp implements MovimentacaoService {
     public Iterable<Movimentacao> findAll() {
         List<Movimentacao> movimentacoes = movimentacaoRepository.findAll();
         if(movimentacoes.isEmpty()){
-            throw new ElementsNotFound("Movimentações");
+            throw new NotFoundElementsException();
         }
         return movimentacoes;
     }
 
     @Override
     public Movimentacao findById(Long id) {
-        return movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException("Movimentação"));
+        return movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException());
 
     }
 
     @Override
     public Movimentacao update(Long id, Movimentacao entity) {
-       ofNullable(entity).orElseThrow(()-> new NullField("Movimentação"));
-       Movimentacao movimentacaodb = movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException("Movimentação"));
+        if(entity == null){
+            throw new NullException();
+        }
+        Movimentacao movimentacaodb = movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException());
         movimentacaodb.setCalendario(entity.getCalendario());
         movimentacaodb.setDataEntrada(entity.getDataEntrada());
         movimentacaodb.setDataSaida(entity.getDataSaida());
@@ -56,7 +58,7 @@ public class MovimentacaoServiceImp implements MovimentacaoService {
 
     @Override
     public void delete(Long id) {
-        movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException("Movimentação"));
+        movimentacaoRepository.findById(id).orElseThrow(()-> new NotFoundException());
         movimentacaoRepository.deleteById(id);
 
     }
